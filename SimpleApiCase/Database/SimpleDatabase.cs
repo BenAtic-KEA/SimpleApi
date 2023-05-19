@@ -9,11 +9,6 @@ namespace SimpleApiCase.Database
         private int ProductIDIncrement { get; set; } = 1;
         public SimpleDatabase() { }
 
-        //public static SimpleDatabase GetInstance()
-        //{
-        //    return Instance;
-        //}
-
         public Product AddProduct(Product product)
         {
             if (product is null || product.Name is null || product.Description is null)

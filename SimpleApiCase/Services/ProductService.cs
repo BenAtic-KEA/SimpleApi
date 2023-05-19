@@ -15,7 +15,7 @@ namespace SimpleApiCase.Services
             Mapper = mapper;
         }
 
-        public AddNewProductResponse AddProduct(AddNewProductRequest productRequest)
+        public Product AddProduct(AddNewProductRequest productRequest)
         {
             if (productRequest.Name == null || productRequest.Name.Length == 0)
                 throw new Exception(message: "Product name is not allowed");
@@ -25,18 +25,17 @@ namespace SimpleApiCase.Services
 
             var product = Mapper.Map<Product>(productRequest);
             var addedProduct = Database.AddProduct(product);
-            var productResponse = Mapper.Map<AddNewProductResponse>(addedProduct);
-            return productResponse;
+            
+            return addedProduct;
         }
 
-        public List<GetAllProductsResponse> GetAllProducts()
+        public List<Product> GetAllProducts()
         {
             if (Database.GetProducts().Count == 0)
                 throw new Exception(message: "You need to create a Product first");
 
             var products = Database.GetProducts();
-            var productsResponse = Mapper.Map<List<GetAllProductsResponse>>(products);
-            return productsResponse;
+            return products;
         }
     }
 }

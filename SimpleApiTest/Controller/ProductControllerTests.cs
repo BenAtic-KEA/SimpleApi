@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Shouldly;
 using SimpleApiCase.Controllers;
@@ -23,7 +24,7 @@ namespace SimpleApiTest.Controller
                 Price = 1337
             };
 
-            var responseProduct = new AddNewProductResponse()
+            var responseProduct = new Product()
             {
                 Id = 1,
                 Name = testProduct.Name,
@@ -32,7 +33,8 @@ namespace SimpleApiTest.Controller
             };
             var serviceMock = new Mock<IProductService>();
             serviceMock.Setup(s => s.AddProduct(It.IsAny<AddNewProductRequest>())).Returns(responseProduct);
-            var controller = new ProductController(serviceMock.Object);
+            IMapper mapper = AddAutomapper();
+            var controller = new ProductController(serviceMock.Object,mapper);
 
             //Act
             var response = await controller.AddProduct(testProduct);
@@ -54,7 +56,8 @@ namespace SimpleApiTest.Controller
 
             var serviceMock = new Mock<IProductService>();
             serviceMock.Setup(s => s.AddProduct(It.IsAny<AddNewProductRequest>())).Throws<Exception>();
-            var controller = new ProductController(serviceMock.Object);
+            IMapper mapper = AddAutomapper();
+            var controller = new ProductController(serviceMock.Object,mapper);
 
             //Act
             var response = await controller.AddProduct(testProduct);
@@ -69,15 +72,15 @@ namespace SimpleApiTest.Controller
         {
 
             //Arrange
-            var products = new List<GetAllProductsResponse>();
-            var testProduct1 = new GetAllProductsResponse
+            var products = new List<Product>();
+            var testProduct1 = new Product
             {
                 Id = 1,
                 Name = "Mouse",
                 Description = "Fastest gaming mouse made",
                 Price = 1337
             };
-            var testProduct2 = new GetAllProductsResponse
+            var testProduct2 = new Product
             {
                 Id = 2,
                 Name = "Keyboard",
@@ -90,7 +93,8 @@ namespace SimpleApiTest.Controller
 
             var serviceMock = new Mock<IProductService>();
             serviceMock.Setup(s => s.GetAllProducts()).Returns(products);
-            var controller = new ProductController(serviceMock.Object);
+            IMapper mapper = AddAutomapper();
+            var controller = new ProductController(serviceMock.Object, mapper);
 
             //Act
             var response = await controller.GetAllProducts();
@@ -108,7 +112,8 @@ namespace SimpleApiTest.Controller
 
         var serviceMock = new Mock<IProductService>();
         serviceMock.Setup(s => s.GetAllProducts()).Throws<Exception>();
-            var controller = new ProductController(serviceMock.Object);
+            IMapper mapper = AddAutomapper();
+            var controller = new ProductController(serviceMock.Object, mapper);
 
         //Act
         var response = await controller.GetAllProducts();
@@ -116,6 +121,13 @@ namespace SimpleApiTest.Controller
         //Assert
         response.ShouldNotBeNull();
             ((ObjectResult) response).StatusCode.ShouldBeEquivalentTo((int) HttpStatusCode.BadRequest);
+        }
+
+        public IMapper AddAutomapper()
+        {
+            var myProfile = new ProductProfile();
+            var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
+            return new Mapper(configuration);
         }
 }
 }

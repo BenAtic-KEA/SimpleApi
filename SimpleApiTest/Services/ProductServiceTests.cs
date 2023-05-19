@@ -30,16 +30,14 @@ namespace SimpleApiTest.Services
             };
             var databaseMock = new Mock<ISimpleDatabase>();
             databaseMock.Setup(p => p.AddProduct(It.IsAny<Product>())).Returns(responseProduct);
-            var myProfile = new ProductProfile();
-            var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
-            IMapper mapper = new Mapper(configuration);
+            IMapper mapper = AddAutomapper();
             var productService = new ProductService(databaseMock.Object, mapper);
             //Act
 
             var result = productService.AddProduct(testProduct);
 
             //Assert
-            result.ShouldBeOfType<AddNewProductResponse>();
+            result.ShouldBeOfType<Product>();
 
         }
 
@@ -59,9 +57,7 @@ namespace SimpleApiTest.Services
                 Description = "Fastest gaming mouse made"
             };
             var databaseMock = new Mock<ISimpleDatabase>();
-            var myProfile = new ProductProfile();
-            var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
-            IMapper mapper = new Mapper(configuration);
+            IMapper mapper = AddAutomapper();
             var productService = new ProductService(databaseMock.Object, mapper);
 
             //Act & Assert
@@ -91,9 +87,7 @@ namespace SimpleApiTest.Services
             products.Add(testProduct2);
             var databaseMock = new Mock<ISimpleDatabase>();
             databaseMock.Setup(p => p.GetProducts()).Returns(products);
-            var myProfile = new ProductProfile();
-            var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
-            IMapper mapper = new Mapper(configuration);
+            IMapper mapper = AddAutomapper();
             var productService = new ProductService(databaseMock.Object, mapper);
 
             //Act
@@ -109,14 +103,19 @@ namespace SimpleApiTest.Services
             //Arrange
             var databaseMock = new Mock<ISimpleDatabase>();
             databaseMock.Setup(p => p.GetProducts()).Throws<Exception>();
-            var myProfile = new ProductProfile();
-            var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
-            IMapper mapper = new Mapper(configuration);
+            IMapper mapper = AddAutomapper();
             var productService = new ProductService(databaseMock.Object, mapper);
 
             //Act & Assert
             Should.Throw<Exception>(() => productService.GetAllProducts());
 
+        }
+
+        public IMapper AddAutomapper()
+        {
+            var myProfile = new ProductProfile();
+            var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
+            return new Mapper(configuration);
         }
     }
 }

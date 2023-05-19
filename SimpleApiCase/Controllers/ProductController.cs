@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using SimpleApiCase.Entities;
 using SimpleApiCase.Services;
@@ -10,9 +11,11 @@ namespace SimpleApiCase.Controllers
     {
 
         private readonly IProductService productService;
-        public ProductController(IProductService productService)
+        private readonly IMapper Mapper;
+        public ProductController(IProductService productService, IMapper mapper)
         {
             this.productService = productService;
+            this.Mapper = mapper;
         }
 
         [HttpGet()]
@@ -20,9 +23,9 @@ namespace SimpleApiCase.Controllers
         {
             try
             {
-                var response = productService.GetAllProducts();
+                var productsResponse = Mapper.Map<List<GetAllProductsResponse>>(productService.GetAllProducts());
 
-                return Ok(response);
+                return Ok(productsResponse);
             }
             catch (Exception e)
             {
@@ -37,8 +40,8 @@ namespace SimpleApiCase.Controllers
         {
             try
             {
-                var response = productService.AddProduct(productRequest);
-                return Ok(response);
+                var productResponse = Mapper.Map<AddNewProductResponse>(productService.AddProduct(productRequest));
+                return Ok(productResponse);
             }
             catch (Exception e)
             {

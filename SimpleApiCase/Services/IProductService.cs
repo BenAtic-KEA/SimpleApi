@@ -4,7 +4,7 @@ namespace SimpleApiCase.Services
 {
     public interface IProductService
     {
-        public AddNewProductResponse AddProduct(AddNewProductRequest productRequest);
-        public List<GetAllProductsResponse> GetAllProducts();
+        public Product AddProduct(AddNewProductRequest productRequest);
+        public List<Product> GetAllProducts();
     }
 }
