@@ -2,11 +2,11 @@
   "profiles": {
     "SimpleApiCase": {
       "commandName": "Project",
-      "launchBrowser": true,
+      "launchBrowser": false,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://localhost:8799;http://localhost:8800"
+      "applicationUrl": "https://localhost:8080;http://localhost:8800"
     }
   }
 }
