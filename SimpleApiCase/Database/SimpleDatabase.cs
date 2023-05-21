@@ -1,27 +1,28 @@
 ﻿using SimpleApiCase.Entities;
+using System.Collections.Generic;
 
 namespace SimpleApiCase.Database
 {
     public sealed class SimpleDatabase : ISimpleDatabase
     {
         public static SimpleDatabase Instance { get; } = new SimpleDatabase();
-        public List<Product> ProductDB { get; } = new List<Product>();
-        private int ProductIDIncrement { get; set; } = 1;
+        public static List<Product> ProductDB { get; } = new List<Product>();
+        private static int ProductIDIncrement { get; set; } = 1;
         public SimpleDatabase() { }
 
-        public Product AddProduct(Product product)
+        public async Task<Product> AddProduct(Product product)
         {
             if (product is null || product.Name is null || product.Description is null)
                 throw new Exception();
 
             product.Id = ProductIDIncrement++;
             ProductDB.Add(product);
-            return product;
+            return await Task.FromResult(product);
         }
 
-        public List<Product> GetProducts()
+        public async Task<IEnumerable<Product>> GetProducts()
         {
-            return ProductDB;
+            return await Task.FromResult(ProductDB);
         }
     }
 }

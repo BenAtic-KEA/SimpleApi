@@ -15,7 +15,7 @@ namespace SimpleApiCase.Services
             Mapper = mapper;
         }
 
-        public Product AddProduct(AddNewProductRequest productRequest)
+        public async Task<Product> AddProduct(AddNewProductRequest productRequest)
         {
             if (productRequest.Name == null || productRequest.Name.Length == 0)
                 throw new Exception(message: "Product name is not allowed");
@@ -24,18 +24,15 @@ namespace SimpleApiCase.Services
                 throw new Exception(message: "Product need a price");
 
             var product = Mapper.Map<Product>(productRequest);
-            var addedProduct = Database.AddProduct(product);
-            
-            return addedProduct;
+            return await Database.AddProduct(product);
         }
 
-        public List<Product> GetAllProducts()
+        public async Task<IEnumerable<Product>> GetAllProducts()
         {
-            if (Database.GetProducts().Count == 0)
+            if (!Database.GetProducts().Result.Any())
                 throw new Exception(message: "You need to create a Product first");
 
-            var products = Database.GetProducts();
-            return products;
+            return await Database.GetProducts();
         }
     }
 }

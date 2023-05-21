@@ -29,7 +29,7 @@ namespace SimpleApiTest.Services
                 Price = testProduct.Price,
             };
             var databaseMock = new Mock<ISimpleDatabase>();
-            databaseMock.Setup(p => p.AddProduct(It.IsAny<Product>())).Returns(responseProduct);
+            databaseMock.Setup(p => p.AddProduct(It.IsAny<Product>())).Returns(Task.FromResult(responseProduct));
             IMapper mapper = AddAutomapper();
             var productService = new ProductService(databaseMock.Object, mapper);
             //Act
@@ -37,7 +37,7 @@ namespace SimpleApiTest.Services
             var result = productService.AddProduct(testProduct);
 
             //Assert
-            result.ShouldBeOfType<Product>();
+            result.ShouldBeOfType<Task<Product>>();
 
         }
 
@@ -86,7 +86,7 @@ namespace SimpleApiTest.Services
             products.Add(testProduct1);
             products.Add(testProduct2);
             var databaseMock = new Mock<ISimpleDatabase>();
-            databaseMock.Setup(p => p.GetProducts()).Returns(products);
+            databaseMock.Setup(p => p.GetProducts()).Returns(() => Task.FromResult(products.AsEnumerable()));
             IMapper mapper = AddAutomapper();
             var productService = new ProductService(databaseMock.Object, mapper);
 
@@ -95,7 +95,7 @@ namespace SimpleApiTest.Services
 
             //Assert
             result.ShouldNotBeNull();
-            result.Count.ShouldBe(2);
+            result.Result.Count().ShouldBe(2);
         }
         [Fact]
         public void GetAllProducts_ShouldThrow_Exception()

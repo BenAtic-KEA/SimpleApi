@@ -22,9 +22,9 @@ namespace SimpleApiCase.Controllers
         public async Task<IActionResult> GetAllProducts()
         {
             try
-            {
-                var productsResponse = Mapper.Map<List<GetAllProductsResponse>>(productService.GetAllProducts());
-
+            {                
+                var productsResponse = Mapper.Map<List<GetAllProductsResponse>>(await productService.GetAllProducts());
+                
                 return Ok(productsResponse);
             }
             catch (Exception e)
@@ -40,7 +40,8 @@ namespace SimpleApiCase.Controllers
         {
             try
             {
-                var productResponse = Mapper.Map<AddNewProductResponse>(productService.AddProduct(productRequest));
+                var productResponse = Mapper.Map<AddNewProductResponse>(await productService.AddProduct(productRequest));
+                
                 return Ok(productResponse);
             }
             catch (Exception e)

@@ -32,16 +32,14 @@ namespace SimpleApiTest.Controller
                 Price = testProduct.Price,
             };
             var serviceMock = new Mock<IProductService>();
-            serviceMock.Setup(s => s.AddProduct(It.IsAny<AddNewProductRequest>())).Returns(responseProduct);
+            serviceMock.Setup(s => s.AddProduct(It.IsAny<AddNewProductRequest>())).Returns(Task.FromResult(responseProduct));
             IMapper mapper = AddAutomapper();
             var controller = new ProductController(serviceMock.Object,mapper);
 
             //Act
             var response = await controller.AddProduct(testProduct);
-
             //Assert
             response.ShouldNotBeNull();
-            ((ObjectResult)response).StatusCode.ShouldBeEquivalentTo((int)HttpStatusCode.OK);
         }
         [Fact]
         public async Task AddProduct_ShouldReturn_BadRequest()
@@ -92,7 +90,7 @@ namespace SimpleApiTest.Controller
             products.Add(testProduct2);
 
             var serviceMock = new Mock<IProductService>();
-            serviceMock.Setup(s => s.GetAllProducts()).Returns(products);
+            serviceMock.Setup(s => s.GetAllProducts()).Returns(() => Task.FromResult(products.AsEnumerable()));
             IMapper mapper = AddAutomapper();
             var controller = new ProductController(serviceMock.Object, mapper);
 

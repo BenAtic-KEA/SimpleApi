@@ -4,10 +4,10 @@ using SimpleApiCase.Entities;
 
 namespace SimpleApiTest.Database
 {
-    public class SimpleDatabaseTests
+    public class SimpleDatabaseTests : IDisposable
     {
         [Fact]
-        public void AddProduct_ShouldReturn_True()
+        public void AddProduct_ShouldBe_Success()
         {
             //Arrange
             var database = new SimpleDatabase();
@@ -18,13 +18,14 @@ namespace SimpleApiTest.Database
                 Price = 1337
             };
             //Act
-            var resultBeforeAdd = database.ProductDB.Count;
-            database.AddProduct(testProduct);
-            var resultAfterAdd = database.ProductDB.Count;
+            var resultBeforeAdd = database.GetProducts().Result.Count();
+            var product = database.AddProduct(testProduct);
+            var resultAfterAdd = database.GetProducts().Result.Count();
 
             //Assert
             resultBeforeAdd.ShouldBeEquivalentTo(0);
             resultAfterAdd.ShouldBeEquivalentTo(1);
+            product.Result.Id.ShouldBeGreaterThan(0);
         }
         [Fact]
         public void AddProduct_WithInvalidProduct_ShouldReturn_Exception()
@@ -63,14 +64,14 @@ namespace SimpleApiTest.Database
 
             //Assert
 
-            testProduct1.Price.ShouldBeEquivalentTo(testProduct1Result.Price);
-            testProduct2.Price.ShouldBeEquivalentTo(testProduct2Result.Price);
-            testProduct1.Description.ShouldBeEquivalentTo(testProduct1Result.Description);
-            testProduct2.Description.ShouldBeEquivalentTo(testProduct2Result.Description);
-            testProduct1.Name.ShouldBeEquivalentTo(testProduct1Result.Name);
-            testProduct2.Name.ShouldBeEquivalentTo(testProduct2Result.Name);
-            testProduct1Result.Id.ShouldBeGreaterThan(0);
-            testProduct2Result.Id.ShouldBeGreaterThan(0);
+            testProduct1.Price.ShouldBeEquivalentTo(testProduct1Result.Result.Price);
+            testProduct2.Price.ShouldBeEquivalentTo(testProduct2Result.Result.Price);
+            testProduct1.Description.ShouldBeEquivalentTo(testProduct1Result.Result.Description);
+            testProduct2.Description.ShouldBeEquivalentTo(testProduct2Result.Result.Description);
+            testProduct1.Name.ShouldBeEquivalentTo(testProduct1Result.Result.Name);
+            testProduct2.Name.ShouldBeEquivalentTo(testProduct2Result.Result.Name);
+            testProduct1Result.Result.Id.ShouldBeGreaterThan(0);
+            testProduct2Result.Result.Id.ShouldBeGreaterThan(0);
         }
 
         [Fact]
@@ -98,9 +99,14 @@ namespace SimpleApiTest.Database
             var response = database.GetProducts();
 
             //Assert
-            response.Count.ShouldBeEquivalentTo(2);
-            response.Exists(p => p.Id == testProduct1Result.Id).ShouldBeTrue();
-            response.Exists(p => p.Id == testProduct2Result.Id).ShouldBeTrue();
+            response.Result.Count().ShouldBeEquivalentTo(2);
+            response.Result.ToList().Exists(p => p.Id == testProduct1Result.Result.Id).ShouldBeTrue();
+            response.Result.ToList().Exists(p => p.Id == testProduct2Result.Result.Id).ShouldBeTrue();
+        }
+
+        public void Dispose()
+        {
+            SimpleDatabase.ProductDB.Clear();
         }
     }
 }
