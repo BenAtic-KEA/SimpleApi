@@ -20,8 +20,8 @@ namespace SimpleApiCase.Services
             if (productRequest.Name == null || productRequest.Name.Length == 0)
                 throw new Exception(message: "Product name is not allowed");
 
-            if (productRequest.Price == 0)
-                throw new Exception(message: "Product need a price");
+            if (productRequest.Price <= 0 )
+                throw new Exception(message: "Product needs a price");
 
             var product = Mapper.Map<Product>(productRequest);
             return await Database.AddProduct(product);
